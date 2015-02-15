@@ -8,14 +8,15 @@ var md5 = require('MD5'),
     mongo = require('mongodb').MongoClient,
     request = require('request'),
     moment = require('moment'),
-    schedule = require('node-schedule'),
-    utcTime = moment().utc().format("YYYYMMDDHHmmss"),
-    sessionHash = md5(devId + "createsession" + authKey + utcTime),
-    fullUrl = ('http://api.smitegame.com/smiteapi.svc/' + 'createsessionJson/' + devId + '/' + sessionHash + '/' + utcTime);
+    schedule = require('node-schedule');
 
 
 schedule.scheduleJob('0,10,20,30,40,50 * * * *', function createSession(){
 //schedule.scheduleJob('* * * * *', function createSession(){
+
+    var utcTime = moment().utc().format("YYYYMMDDHHmmss"),
+        sessionHash = md5(devId + "createsession" + authKey + utcTime),
+        fullUrl = ('http://api.smitegame.com/smiteapi.svc/' + 'createsessionJson/' + devId + '/' + sessionHash + '/' + utcTime);
 
 request({url: fullUrl}, function(error, response, body){
     var jsonBody =JSON.parse(body);
