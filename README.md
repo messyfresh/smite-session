@@ -11,7 +11,7 @@ export authKey=XXXXXXXXXXXXXXXXXX
 export mongoUrl=mongodb://localhost:27017/database
 ```
 
-After that simple use
+After that simply use
 
 ```
 npm start
