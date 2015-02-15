@@ -2,6 +2,12 @@
 Smite API Session ID Generator automation to MongoDB.  Focus on your smite app instead of worrying about expiring session ids.
 
 # How to use
+Simply clone the repo and cd into SmiteSession folder then execute:
+
+```
+npm install
+```
+
 There are 3 attributes you need to assign as environment variables to get started.
 The following commands are for Ubuntu.
 
