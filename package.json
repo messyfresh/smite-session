@@ -1,15 +1,15 @@
 {
-  "name": "SmiteSessions",
+  "name": "smite-session",
   "version": "0.0.1",
   "description": "Generates a Smite API Session ID every 10 minutes and pushes it to a MongoDB",
   "author": "Scott Nix <messyfresh@gmail.com>",
+  "main": "smitesession.js",
   "bin": {
     "smitesession": "./smitesession"
   },
   "scripts": {
     "start": "nodejs smitesession.js"
   },
-  "private": true,
   "dependencies": {
     "MD5": "~1.2.1",
     "node-schedule": "~0.1.16",

@@ -11,8 +11,17 @@ var md5 = require('MD5'),
     schedule = require('node-schedule');
 
 
-schedule.scheduleJob('0,10,20,30,40,50 * * * *', function createSession(){
-//schedule.scheduleJob('* * * * *', function createSession(){
+function SessionSchedule(devId, authKey, mongoUrl){schedule.scheduleJob('0,10,20,30,40,50 * * * *', function createSession(){
+    
+    if (devId == null){
+        devId = process.env.devId;
+    }
+    if (authKey == null){
+        authKey = process.env.authKey;
+    }
+    if (mongoUrl == undefined){
+        mongoUrl = process.env.mongoUrl;
+    }
 
     var utcTime = moment().utc().format("YYYYMMDDHHmmss"),
         sessionHash = md5(devId + "createsession" + authKey + utcTime),
@@ -29,7 +38,7 @@ request({url: fullUrl}, function(error, response, body){
                 collection.remove({}, {w: 0});
                 collection.insert({_id: utcTime, session_id: jsonBody.session_id}, function(err){
                     if(err){
-                        console.log(err);
+                        console.log("Mongo Insert Error: " + err);
                     }
                     db.close();
                 });
@@ -41,5 +50,9 @@ request({url: fullUrl}, function(error, response, body){
     }
 });
 });
+}
 
-console.log("SmiteSession Running");
+exports.devId = devId;
+exports.authKey = authKey;
+exports.mongoUrl = mongoUrl;
+exports.SessionSchedule = SessionSchedule;
