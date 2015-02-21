@@ -28,7 +28,7 @@ function SessionSchedule(devId, authKey, mongoUrl){schedule.scheduleJob('0,10,20
         fullUrl = ('http://api.smitegame.com/smiteapi.svc/' + 'createsessionJson/' + devId + '/' + sessionHash + '/' + utcTime);
 
 request({url: fullUrl}, function(error, response, body){
-    var jsonBody =JSON.parse(body);
+    var jsonBody = JSON.parse(body);
     if(jsonBody.ret_msg == 'Approved'){
         mongo.connect(mongoUrl, function(err, db){
             if(err){
@@ -36,7 +36,7 @@ request({url: fullUrl}, function(error, response, body){
             } else {
                 var collection = db.collection('sessionid');
                 collection.remove({}, {w: 0});
-                collection.insert({_id: utcTime, session_id: jsonBody.session_id}, function(err){
+                collection.insert({ ret_msg: jsonBody.ret_msg, session_id: jsonBody.session_id, timestamp: jsonBody.timestamp}, function(err){
                     if(err){
                         console.log("Mongo Insert Error: " + err);
                     }
@@ -45,12 +45,14 @@ request({url: fullUrl}, function(error, response, body){
             }
         });
     } else {
+        console.log("API ERROR: ");
         console.log(jsonBody);
         console.log(utcTime);
     }
 });
 });
 }
+
 
 exports.devId = devId;
 exports.authKey = authKey;
