@@ -34,8 +34,12 @@ The script will obtain a new Session Id every 10 minutes (To be safe) and push
 it to the MongoDB. The way it is stored is as follows:
 
 ```
-_id: (UTC TimeStamp)
-session_id: (session id)
+_id: {
+    $oid: Randomly Generated Id
+    },
+    ret_msg: Approved  (If all went well)
+    session_id: (session id)
+    timestamp: Server returned timestamp
 ```
 
 The script will also delete any old expired session ids, to maintain
