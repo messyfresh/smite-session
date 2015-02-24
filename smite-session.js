@@ -15,13 +15,13 @@ function SessionSchedule(devId, authKey, mongoUrl) {
     schedule.scheduleJob('0,10,20,30,40,50 * * * *', function createSession() {
 
         if (devId == null) {
-            devId = process.env.devId;
+            devId = process.env.DEVID;
         }
         if (authKey == null) {
-            authKey = process.env.authKey;
+            authKey = process.env.AUTHKEY;
         }
         if (mongoUrl == undefined) {
-            mongoUrl = process.env.mongoUrl;
+            mongoUrl = process.env.MONGOLAB_URI;
         }
 
         var utcTime = moment().utc().format("YYYYMMDDHHmmss"),
