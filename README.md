@@ -1,6 +1,14 @@
 # SmiteSession
 Smite API Session ID Generator automation to MongoDB.  Focus on your smite app instead of worrying about expiring session ids.
 
+# UPDATE: 23FEB2015
+	Changed the env variables as follows
+	```
+	devId > DEVID
+	authKey > AUTHKEY
+	mongoUrl > MONGOLAB_URI
+	```
+
 # How to use
 Simply install with npm
 
