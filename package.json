@@ -1,6 +1,6 @@
 {
   "name": "smite-session",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Generates a Smite API Session ID every 10 minutes and pushes it to a MongoDB",
   "author": "Scott Nix <messyfresh@gmail.com>",
   "main": "smite-session.js",
