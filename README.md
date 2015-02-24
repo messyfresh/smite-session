@@ -12,9 +12,9 @@ There are 3 attributes you need to assign as environment variables to get starte
 The following commands are for Ubuntu.
 
 ```
-export devId=XXXX
-export authKey=XXXXXXXXXXXXXXXXXX
-export mongoUrl=mongodb://localhost:27017/database
+export DEVID=XXXX
+export AUTHKEY=XXXXXXXXXXXXXXXXXX
+export MONGOLAB_URI=mongodb://localhost:27017/database
 ```
 
 You can also assign these variables manually in your script (not recommended!)
