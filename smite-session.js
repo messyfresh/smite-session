@@ -10,28 +10,35 @@ var md5 = require('MD5'),
     moment = require('moment'),
     schedule = require('node-schedule');
 
+var utcTime = moment().utc().format("YYYYMMDDHHmmss"),
+    sessionHash = md5(devId + "createsession" + authKey + utcTime),
+    fullUrl = ('http://api.smitegame.com/smiteapi.svc/' + 'createsessionJson/' + devId + '/' + sessionHash + '/' + utcTime);
 
-function SessionSchedule(devId, authKey, mongoUrl) {
+if (devId == null) {
+    devId = process.env.DEVID;
+}
+if (authKey == null) {
+    authKey = process.env.AUTHKEY;
+}
+if (mongoUrl == undefined) {
+    mongoUrl = process.env.MONGOLAB_URI;
+}
+
+
+function SessionSchedule() {
     schedule.scheduleJob('0,10,20,30,40,50 * * * *', function createSession() {
-
-        if (devId == null) {
-            devId = process.env.DEVID;
-        }
-        if (authKey == null) {
-            authKey = process.env.AUTHKEY;
-        }
-        if (mongoUrl == undefined) {
-            mongoUrl = process.env.MONGOLAB_URI;
-        }
-
-        var utcTime = moment().utc().format("YYYYMMDDHHmmss"),
-            sessionHash = md5(devId + "createsession" + authKey + utcTime),
-            fullUrl = ('http://api.smitegame.com/smiteapi.svc/' + 'createsessionJson/' + devId + '/' + sessionHash + '/' + utcTime);
+        console.log("Starting Create Session");
 
         request({
             url: fullUrl
         }, function(error, response, body) {
-            var jsonBody = JSON.parse(body);
+            try {
+                var jsonBody = JSON.parse(body);
+            } catch(err){
+                console.log("JSON Parse error: " + err);
+                console.log("Trying Again");
+                createSession();
+            }
             if (jsonBody.ret_msg == 'Approved') {
                 mongo.connect(mongoUrl, function(err, db) {
                     if (err) {
@@ -40,17 +47,24 @@ function SessionSchedule(devId, authKey, mongoUrl) {
                         var collection = db.collection('sessionid');
                         collection.remove({}, {
                             w: 0
-                        });
-                        collection.insert({
-                            ret_msg: jsonBody.ret_msg,
-                            session_id: jsonBody.session_id,
-                            timestamp: jsonBody.timestamp
-                        }, function(err) {
-                            if (err) {
-                                console.log("Mongo Insert Error: " + err);
+                        }, function(err, response){
+                            if (err) throw err;
+                            else if (response !== null){
+                                console.log(response);
+                            } else {
+                                collection.insert({
+                                    ret_msg: jsonBody.ret_msg,
+                                    session_id: jsonBody.session_id,
+                                    timestamp: jsonBody.timestamp
+                                }, console.log("Inserted: " + jsonBody.session_id + " into DB"), function (err) {
+                                    if (err) {
+                                        console.log("Mongo Insert Error: " + err);
+                                    }
+                                    db.close();
+                                });
                             }
-                            db.close();
                         });
+
                     }
                 });
             } else {
@@ -62,6 +76,7 @@ function SessionSchedule(devId, authKey, mongoUrl) {
     });
 }
 
+SessionSchedule();
 
 exports.devId = devId;
 exports.authKey = authKey;
