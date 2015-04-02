@@ -1,6 +1,10 @@
 # SmiteSession
 Smite API Session ID Generator automation to MongoDB.  Focus on your smite app instead of worrying about expiring session ids.
 
+# UPDATE 1APR2015
+    Fixed a bug where the newly generated session id was immediately erased after it
+    was stored in the database
+
 # UPDATE: 23FEB2015
 	Changed the env variables as follows
 	```

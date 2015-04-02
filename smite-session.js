@@ -10,10 +10,6 @@ var md5 = require('MD5'),
     moment = require('moment'),
     schedule = require('node-schedule');
 
-var utcTime = moment().utc().format("YYYYMMDDHHmmss"),
-    sessionHash = md5(devId + "createsession" + authKey + utcTime),
-    fullUrl = ('http://api.smitegame.com/smiteapi.svc/' + 'createsessionJson/' + devId + '/' + sessionHash + '/' + utcTime);
-
 if (devId == null) {
     devId = process.env.DEVID;
 }
@@ -27,7 +23,10 @@ if (mongoUrl == undefined) {
 
 function SessionSchedule() {
     schedule.scheduleJob('0,10,20,30,40,50 * * * *', function createSession() {
-        console.log("Starting Create Session");
+        var utcTime = moment().utc().format("YYYYMMDDHHmmss"),
+            sessionHash = md5(devId + "createsession" + authKey + utcTime),
+            fullUrl = ('http://api.smitegame.com/smiteapi.svc/' + 'createsessionJson/' + devId + '/' + sessionHash + '/' + utcTime);
+
 
         request({
             url: fullUrl
@@ -75,8 +74,6 @@ function SessionSchedule() {
         });
     });
 }
-
-SessionSchedule();
 
 exports.devId = devId;
 exports.authKey = authKey;
