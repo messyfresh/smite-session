@@ -1,18 +1,18 @@
 {
-    "name": "smite-session",
-    "version": "0.1.1",
-    "description": "Generates a Smite API Session ID every 10 minutes and pushes it to a MongoDB",
-    "author": "Scott Nix <messyfresh@gmail.com>",
-    "main": "smite-session.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/messyfresh/smite-session.git"
-    },
-    "dependencies": {
-        "MD5": "~1.2.1",
-        "node-schedule": "~0.1.16",
-        "moment": "~2.9.0",
-        "request": "~2.53.0",
-        "mongodb": "~1.4.30"
-    }
+  "name": "smite-session",
+  "version": "0.1.2",
+  "description": "Generates a Smite API Session ID every 10 minutes and pushes it to a MongoDB",
+  "author": "Scott Nix <messyfresh@gmail.com>",
+  "main": "smite-session.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messyfresh/smite-session.git"
+  },
+  "dependencies": {
+    "MD5": "~1.2.1",
+    "node-schedule": "~0.1.16",
+    "moment": "~2.9.0",
+    "request": "~2.53.0",
+    "mongodb": "~1.4.30"
+  }
 }
