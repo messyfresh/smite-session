@@ -1,7 +1,5 @@
 # SmiteSession
 
-### Smite API Session ID generator utilizing ES6 Promises
-
 ## Installation
 ```
 npm install smite-session
