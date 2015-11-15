@@ -1,81 +1,50 @@
-// Credentials
-var devId = process.env.DEVID;
-var authKey = process.env.AUTHKEY;
-var mongoUrl = process.env.MONGOLAB_URI;
+var md5 = require('md5');
+var _assign = require('lodash.assign');
+var utcTime = require('moment').utc().format("YYYYMMDDHHmmss");
+var http = require('http');
 
-// Variables used for app
-var md5 = require('MD5'),
-    mongo = require('mongodb').MongoClient,
-    request = require('request'),
-    moment = require('moment'),
-    schedule = require('node-schedule');
+//Establish config
+var config = {
+    devId: null,
+    authKey: null
+};
 
-if (devId == null) {
-    devId = process.env.DEVID;
-}
-if (authKey == null) {
-    authKey = process.env.AUTHKEY;
-}
-if (mongoUrl == undefined) {
-    mongoUrl = process.env.MONGOLAB_URI;
+function set(update){
+    _assign(config, update);
 }
 
 
-function SessionSchedule() {
-    schedule.scheduleJob('0,10,20,30,40,50 * * * *', function createSession() {
-        var utcTime = moment().utc().format("YYYYMMDDHHmmss"),
-            sessionHash = md5(devId + "createsession" + authKey + utcTime),
-            fullUrl = ('http://api.smitegame.com/smiteapi.svc/' + 'createsessionJson/' + devId + '/' + sessionHash + '/' + utcTime);
+function genSession(options){
 
+    var devId = config.devId;
+    var authKey = config.authKey;
+    var authHash = md5(devId + "createsession" + authKey + utcTime);
+    var baseUrl = 'http://api.smitegame.com/smiteapi.svc/createsessionjson/';
+    var sessionUrl = baseUrl + devId + '/' + authHash + '/' + utcTime;
 
-        request({
-            url: fullUrl
-        }, function(error, response, body) {
-            try {
-                var jsonBody = JSON.parse(body);
-            } catch(err){
-                console.log("JSON Parse error: " + err);
-                console.log("Trying Again");
-                createSession();
+    return new Promise(function(resolve, reject){
+        http.get(sessionUrl, function(res){
+            if(200 !== res.statusCode){
+                reject(new Error(res.statusMessage));
+            }else{
+                var body = '';
+                res
+                    .on('data', function(chunk){
+                            body += chunk;
+                        }
+                    )
+                    .on('end', function(){
+                            //console.log('body data: ' + body);
+                            resolve(JSON.parse(body));
+                        }
+                    );
             }
-            if (jsonBody.ret_msg == 'Approved') {
-                mongo.connect(mongoUrl, function(err, db) {
-                    if (err) {
-                        console.log("MongoDB Connect Error: " + err);
-                    } else {
-                        var collection = db.collection('sessionid');
-                        collection.remove({}, {
-                            w: 0
-                        }, function(err, response){
-                            if (err) throw err;
-                            else if (response !== null){
-                                console.log(response);
-                            } else {
-                                collection.insert({
-                                    ret_msg: jsonBody.ret_msg,
-                                    session_id: jsonBody.session_id,
-                                    timestamp: jsonBody.timestamp
-                                }, console.log("Inserted: " + jsonBody.session_id + " into DB"), function (err) {
-                                    if (err) {
-                                        console.log("Mongo Insert Error: " + err);
-                                    }
-                                    db.close();
-                                });
-                            }
-                        });
-
-                    }
-                });
-            } else {
-                console.log("API ERROR: ");
-                console.log(jsonBody);
-                console.log(utcTime);
-            }
+        }).on('error', function(error){
+            console.error(error);
+            reject(new Error('error making API call: ' + error));//TODO: check if JSON
         });
     });
 }
 
-exports.devId = devId;
-exports.authKey = authKey;
-exports.mongoUrl = mongoUrl;
-exports.SessionSchedule = SessionSchedule;
+module.exports.set = set;
+module.exports.genSession = genSession;

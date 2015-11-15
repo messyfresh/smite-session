@@ -9,3 +9,9 @@ node_modules
 #######
 
 .idea
+
+###########
+# npm-debug
+###########
+
+npm-debug.log
