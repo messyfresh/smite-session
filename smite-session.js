@@ -1,6 +1,6 @@
 var md5 = require('md5');
 var _assign = require('lodash.assign');
-var utcTime = require('moment').utc().format("YYYYMMDDHHmmss");
+var moment = require('moment');
 var http = require('http');
 
 //Establish config
@@ -18,12 +18,14 @@ function genSession(options){
 
     var devId = config.devId;
     var authKey = config.authKey;
+    var utcTime = new moment().utc().format("YYYYMMDDHHmmss");
     var authHash = md5(devId + "createsession" + authKey + utcTime);
     var baseUrl = 'http://api.smitegame.com/smiteapi.svc/createsessionjson/';
     var sessionUrl = baseUrl + devId + '/' + authHash + '/' + utcTime;
 
     return new Promise(function(resolve, reject){
         http.get(sessionUrl, function(res){
+            console.log(utcTime);
             if(200 !== res.statusCode){
                 reject(new Error(res.statusMessage));
             }else{
